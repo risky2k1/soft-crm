@@ -118,7 +118,7 @@ class CalculateCashService
 
         $query = Task::where('created_at', '>=', $dates->keys()->first())
             ->groupBy(DB::raw('DATE(created_at)'))
-            ->orderBy('created_at');
+            ->orderBy(DB::raw('DATE(created_at)'), 'asc');
 
         if ($isCompleted) {
             $query->where('completed', 1);
