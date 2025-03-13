@@ -3,6 +3,7 @@
 namespace App\Console\Commands;
 
 use App\Jobs\StoreSystemLogJob;
+use App\Models\Administrator;
 use Illuminate\Console\Command;
 use Illuminate\Foundation\Bus\DispatchesJobs;
 use Request;
@@ -60,6 +61,8 @@ class processSoftCRM extends Command
         $this->info('Everything looks perfect! Now you can start use SoftCRM!');
         $this->info('If you have any question please contact with me by email: kamil.grzechulskii@gmail.com');
 
-        $this->dispatchSync(new StoreSystemLogJob('First usage of process-softcrm command', 200, 1));
+        $authUser = Administrator::query()->first();
+
+        $this->dispatchSync(new StoreSystemLogJob('First usage of process-softcrm command', 200, $authUser));
     }
 }

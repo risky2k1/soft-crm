@@ -18,15 +18,21 @@ class CalculateCashService
      */
     public function loadCountCashTurnover(): mixed
     {
-        $productSum = Product::sum(function ($product) {
-            return $product->price * $product->count;
-        });
+        $productSum = Product::query()
+            ->get()
+            ->sum(function ($product) {
+                return $product->price * $product->count;
+            });
 
-        $salesSum = Sale::sum(function ($sale) {
-            return $sale->price * $sale->quantity;
-        });
+        $salesSum = Sale::query()
+            ->get()
+            ->sum(function ($sale) {
+                return $sale->price * $sale->quantity;
+            });
 
-        $financesSum = Finance::sum('net');
+        $financesSum = Finance::query()
+            ->get()
+            ->sum('net');
 
         $officialSum = $productSum + $salesSum + $financesSum;
 
@@ -39,16 +45,20 @@ class CalculateCashService
     public function loadCountTodayIncome(): mixed
     {
         $productSum = Product::whereDate('created_at', Carbon::today())
+            ->get()
             ->sum(function ($product) {
                 return $product->price * $product->count;
             });
 
         $salesSum = Sale::whereDate('created_at', Carbon::today())
+            ->get()
             ->sum(function ($sale) {
                 return $sale->price * $sale->quantity;
             });
 
-        $financesSum = Finance::whereDate('created_at', Carbon::today())->sum('net');
+        $financesSum = Finance::whereDate('created_at', Carbon::today())
+            ->get()
+            ->sum('net');
 
         $todayIncome = $productSum + $salesSum + $financesSum;
 
@@ -61,16 +71,20 @@ class CalculateCashService
     public function loadCountYesterdayIncome(): mixed
     {
         $productSum = Product::whereDate('created_at', Carbon::yesterday())
+            ->get()
             ->sum(function ($product) {
                 return $product->price * $product->count;
             });
 
         $salesSum = Sale::whereDate('created_at', Carbon::yesterday())
+            ->get()
             ->sum(function ($sale) {
                 return $sale->price * $sale->quantity;
             });
 
-        $financesSum = Finance::whereDate('created_at', Carbon::yesterday())->sum('net');
+        $financesSum = Finance::whereDate('created_at', Carbon::yesterday())
+            ->get()
+            ->sum('net');
 
         $yesterdayIncome = $productSum + $salesSum + $financesSum;
 
@@ -104,7 +118,7 @@ class CalculateCashService
 
         $query = Task::where('created_at', '>=', $dates->keys()->first())
             ->groupBy(DB::raw('DATE(created_at)'))
-            ->orderBy('created_at');
+            ->orderBy(DB::raw('DATE(created_at)'), 'asc');
 
         if ($isCompleted) {
             $query->where('completed', 1);
